@@ -166,4 +166,4 @@ fviz_pca_ind(iris.pca, axes = c(1,2), addEllipses = TRUE ,geom.ind = "point", co
 (b) Proposer un algorithme permettant de classifier automatiquement une nouvelle iris inconnue et ainsi déterminer son espèce. Vous évoquerez les limites de votre approche et possibilités pour
 pallier à ces effets.
 
-L'algorthme qu'on peut proposer selon les petal_width et les petal length comme on peut voir 
+L'algorthme qu'on peut proposer c'est par rapport au sepal_width et sepal_length comme on peut voir 
