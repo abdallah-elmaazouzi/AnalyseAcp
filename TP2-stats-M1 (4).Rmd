@@ -1,7 +1,7 @@
 ---
 title: "Compte-rendu Statistiques -- TP2"
 subtitle: Analyse en composantes principales et apprentissage
-autor: Amine Elachar 
+author: Amine Elachar et abdallah elmaazouzi
 output:
   word_document: default
   pdf_document:
@@ -39,7 +39,27 @@ On considère le fichier `iris.csv` sur Celene répertoriant 150 individus fleur
 
 > > - Corrélation entre les variables.
 
+Premièrement nous voulons étudier combien de ligne et colonnes on a dans la source de données iris: (150 ligne et 5 colonnes)
+
 ```{r}
+
+iris <- read.csv("C:/Users/incognito/Downloads/iris.csv", sep=";")
+dim(iris)
+```
+afin d'étudier les statistics de notre source de données(min max moyenne et écart type: 
+```{r}
+summary(iris)
+```
+```{r}
+# To make a visualisation in R, we can use the core plotting functions of R.
+ # A histogram shows the underlying frequency distribution. We use the function 'hist()'
+hist(iris[, 'Sepal.Width'], main= 'Histogram of sepal width for all flowers', xlab='Width (cm)')
+
+
+```
+
+```{r}
+
 iris <- read.csv("C:/Users/incognito/Downloads/iris.csv", sep=";")
 library(RColorBrewer)
 boxplot(iris[0:4],
@@ -54,7 +74,7 @@ variables<-iris[0:4]
 
 > (b) Sur la base de ces analyses, quelles variables vous semblent pertinentes pour l'ACP ? 
 
-```{r}
+```{r, echo = FALSE, results='hide', message=FALSE}
 library(PerformanceAnalytics)
 chart.Correlation(variables,TRUE)
 ```
@@ -67,6 +87,7 @@ Les variables qui semblent les plus pertinentes pour l'acp sont Sepal.length et 
 
 
 2.  Calculer les valeurs propres de la matrice des données `iris`. Combien d'axes proposez vous de retenir pour l'ACP ? Détaillez votre réponse. 
+
 
 ```{r}
 library("FactoMineR")
@@ -97,75 +118,52 @@ toucher le cercle, sans jamais le dépasser.
 
 
 ```{r}
-fviz_pca_var(iris.pca, repel = TRUE)
+fviz_pca_var(iris.pca, col.var = "cos2", 
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), repel = TRUE )
 
 ```
 
 > (b) Interpréter la signification des axes retenus. Vous pourrez vous aider de la contribution des variables aux axes factoriels. 
 
 
+On peut voir que toutes les variables sont très corrélées à l'axe factoriel engendré par $\vec{v_1}$. Toutes les flèches dépassent une valeur projetée de 0.75 sur `Dim1`.
 
+Afin de voir plus préciseamment les coordonnées précises des composantes princiipales :
 
-
-
-
-
-
-
-> (a) Proposer une analyse préliminaire par statistiques descriptives du jeu de données `mnist`. Votre analyse devra contenir notamment:
-
-> >- Nombre de caractères de chaque classe.
-
-> >- Des premiers indicateurs sur la proportion de gris par pixel, puis agrégé par classe de caractère. 
-
-> (b) Sur la base de ces analyses, certaines zones de l'image vous semblent t-elles plus pertinentes pour l'analyse ? Lesquelles ? Pourquoi ? 
-
-2. Classification par l'algorithme des $k$ plus proches voisins (kNN). 
-
-> L'algorithme des $k$ proches voisins ($k$-Nearest Neightbors) est une méthode de prédiction qui, pour une base de données d'apprentissage, cherche à déterminer la classe d'une donnée inconnue. 
-
-> L'idée générale de cet algorithme est très simple. Pour une nouvelle donnée d'entrée $x$, on évalue sa distance à toutes les autres données connues de notre base d'apprentissage $\mathbf{X}$. 
-
-> On rappelle que la distance euclidienne entre deux éléments $x,y\in \mathbb{R}^p$ est définie telle que:
-
-$$\left\Vert x-y\right\Vert = \sqrt{\sum_{i=1}^p (x_i-y_i)^2}$$
-
-> On retient ensuite uniquement les $k$ voisins $\mathbf{X_i}$ les plus proches de $x$. On regarde alors les classes $\mathbf{Y_i}$ de ces données $\mathbf{X_i}$, puis on prédit la classe la plus présente. Par défaut on utilisera $k=1$.
-
-> (a) En assumant que $\mathbf{X}$ est doté de $n$ individus définis dans un espace de dimension $p$. Quelle est la complexité de l'algorithme des $k$-Nearest Neightbors pour $k = 1$. 
-
-> (b) Diviser le jeu de données `mnist` en deux ensembles : 
-
-> > - Un ensemble d'apprentissage (train set) qui contiendra 80% du jeu initial. 
-
-> > - Un ensemble test (test set) qui contiendra le reste des données. 
-
-> On veillera à conserver les labels des deux ensembles dans un vecteur à part. 
-
-> (c) La commande `knn` du package `class` permet de réaliser une classification à l'aide de l'algorithme des $k$-Nearest Neightbors:
-
-> >```{r, eval = FALSE}
-> > library(class)
-> > 
-> > knn(X_train, X_test, cl = Y_train_label, k = nb_neightbors)
+```{r}
+round(get_pca_var(iris.pca)$coord, 2)
 ```
 
-> > Appliquer l'algorithme kNN (avec $k=1$) sur votre ensemble d'apprentissage et de test. On veillera à sauvegarder le résultat de la fonction dans une variable `prediction`:
 
-> > > `prediction <- knn(...)`
 
-> > Donner le temps d'exécution de l'algorithme.
+4. Analyse des individus
 
-> (d) La commande `table(prediction, Y_test_label)` permet de dresser la _matrice de confusion_ $C$ de la classification effectuée. Le nombre $c_{ij}$ représente le nombre d'éléments de la classe $i$ classifiés en tant que $j$. 
+> (a) Présenter la projection des indivus dans le plan factoriel. Vous colorerez dans un premier temps les points en fonction de l'espèce d'iris. 
+> (b) Colorer les individus en fonction de leur contribution aux axes factoriels. Que remarquez-vous ? Pouvez l'expliquer ? 
 
-> > Quel est le pourcentage de caractères manuscrits de l’ensemble de test qui ont été mal classés ? Cet algorithme vous semble t-il efficace ? Quel critique peut-on lui faire ?
+```{r}
+library(RColorBrewer)
+fviz_pca_ind(iris.pca, axes = c(1,2), geom.ind = "point", col.ind = iris[,5])
+```
 
-> (e) Pour chaque classe, identifier un exemple de caractère mal classé par l'algorithme. Vous illustrerez ces caractères à l'aide de la fonction `img` donnée plus haut et ferez figurer la classe prédite et réelle des caractères. 
+Cette projection vient confirmer notre analyse précédente du cercle des corrélations
 
-3. Prétraitement-compression des données par ACP
+On retrouve bien un clivage des espèces selon l’axe Dim1, entre la gauche et la droite.
 
-> (a) Effectuer une ACP du jeu `mnist` et analyser la série des valeurs propres. Combien de composantes doivent être conservées pour avoir plus de 95% de l’inertie. 
+(c) Commenter la qualité de représentation des individus.
 
-> (b) Appliquer à nouveau l'algorithme kNN mais ici vous utiliserez comme jeu initial la projection via ACP réalisée à la question précédente. Que constatez-vous ? 
 
-> (c) Dresser la nouvelle matrice de confusion à l'issu de la classification précédente. Comparer ces résultats avec la matrice de la question 2. (d). Que peut-on dire ? 
+5. Apprentissage statistique
+L’option addEllipses=TRUE de la fonction fviz_pca_ind permet de dessiner l’ellipse de confiance
+(covariance ellipse error) à 95%.
+
+```{r}
+library(RColorBrewer)
+fviz_pca_ind(iris.pca, axes = c(1,2), addEllipses = TRUE ,geom.ind = "point", col.ind = iris[,5])
+```
+
+
+(b) Proposer un algorithme permettant de classifier automatiquement une nouvelle iris inconnue et ainsi déterminer son espèce. Vous évoquerez les limites de votre approche et possibilités pour
+pallier à ces effets.
+
+L'algorthme qu'on peut proposer selon les petal_width et les petal length comme on peut voir 
