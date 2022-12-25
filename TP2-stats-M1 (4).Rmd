@@ -166,4 +166,81 @@ fviz_pca_ind(iris.pca, axes = c(1,2), addEllipses = TRUE ,geom.ind = "point", co
 (b) Proposer un algorithme permettant de classifier automatiquement une nouvelle iris inconnue et ainsi déterminer son espèce. Vous évoquerez les limites de votre approche et possibilités pour
 pallier à ces effets.
 
-L'algorthme qu'on peut proposer c'est par rapport au sepal_width et sepal_length comme on peut voir 
+L'algorthme qu'on peut proposer c'est par rapport au sepal_width et sepal_length comme on peut voir on peut par exemple déduire à  partir d'une espèce qui le sepal_width:
+si sepal_width <=-1 :
+      alors c'est une Stosa 
+Si -1<Sepal_width<1:
+      alors c'est une versicolor
+Si Sepal_width>1:
+      alors c'est une virginica
+    
+> 5. Reprendre l'analyse du jeu de données `iris` mais en effectuant ici une ACP **non réduite**. On appliquera pour ça l'option `scale = FALSE`lors de l'exécution de la fonction `PCA`.       
+
+```{r}
+library("FactoMineR")
+iris_non_reduite.pca <- PCA(variables, graph = FALSE, scale=FALSE)
+library("factoextra")
+eig_non_reduite.val <- get_eigenvalue(iris_non_reduite.pca)
+round(eig_non_reduite.val,2)
+```
+
+Comme on peut remarquer que pour la dimension 1 explique 92.46 notre jeux de données plus que l'acp.
+
+afin d'observer le graphique des valeurs propres on a executé la commande suivante: 
+
+```{r}
+fviz_eig(iris_non_reduite.pca, addlabels = TRUE)
+```
+
+Remarque: sur ce graphique on peut remarquer que la première dimension explique une grande partie de l'information de notre nuage de points de 97.77%
+
+En terme de variance cumulée , les deux premières dimensions expliquent 95.9% de l'information de notre jeu de données ce qui est exellent 
+
+> 3. Analyse des variables:
+
+```{r}
+fviz_pca_var(iris_non_reduite.pca, col.var = "cos2", 
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), repel = TRUE )
+
+```
+
+
+> (b) Interpréter la signification des axes retenus. Vous pourrez vous aider de la contribution des variables aux axes factoriels. 
+
+
+On peut voir que toutes les variables sont très corrélées à l'axe factoriel engendré par $\vec{v_1}$. Toutes les flèches dépassent une valeur projetée de 0.75 sur `Dim1`.
+
+Afin de voir plus préciseamment les coordonnées précises des composantes princiipales :
+
+```{r}
+round(get_pca_var(iris_non_reduite.pca)$coord, 2)
+```
+
+
+
+4. Analyse des individus
+
+> (a) Présenter la projection des indivus dans le plan factoriel. Vous colorerez dans un premier temps les points en fonction de l'espèce d'iris. 
+> (b) Colorer les individus en fonction de leur contribution aux axes factoriels. Que remarquez-vous ? Pouvez l'expliquer ? 
+
+```{r}
+library(RColorBrewer)
+fviz_pca_ind(iris_non_reduite.pca, axes = c(1,2), geom.ind = "point", col.ind = iris[,5])
+```
+
+Cette projection vient confirmer notre analyse précédente du cercle des corrélations
+
+On retrouve bien un clivage des espèces selon l’axe Dim1, entre la gauche et la droite.
+
+(c) Commenter la qualité de représentation des individus.
+
+
+5. Apprentissage statistique
+L’option addEllipses=TRUE de la fonction fviz_pca_ind permet de dessiner l’ellipse de confiance
+(covariance ellipse error) à 95%.
+
+```{r}
+library(RColorBrewer)
+fviz_pca_ind(iris_non_reduite.pca, axes = c(1,2), addEllipses = TRUE ,geom.ind = "point", col.ind = iris[,5])
+```
+      
