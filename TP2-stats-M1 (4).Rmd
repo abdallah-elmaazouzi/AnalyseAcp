@@ -243,4 +243,28 @@ L’option addEllipses=TRUE de la fonction fviz_pca_ind permet de dessiner l’e
 library(RColorBrewer)
 fviz_pca_ind(iris_non_reduite.pca, axes = c(1,2), addEllipses = TRUE ,geom.ind = "point", col.ind = iris[,5])
 ```
+
+
+> Que remarquez vous ? Quelle méthode semble finalement donner les meilleurs résultats ici ? Expliquer ces résultats. 
+
+
+à terminer
+
+## Sommeil des mammifères
+
+On considère le fichier `sleep.csv` sur Celene répertoriant les données de 70 espèces de mammifères concernant leur sommeil et quelques autres caractéristiques. On donne la description suivante des colonnes:
+
+|Colonne|Description|Value|
+|---------------|-----------------------------------|----------------|
+|`name`|Nom français vernaculaire de l'animal|String|
+|`genus`|Genre, subdivion de la classification biologique|String|
+|`vore`|Régime alimentaire de l'animal|String|
+|`order`|Ordre, subdivion de la classification biologique|String|
+|`sleep_total`|Durée (en h) de sommeil sur une journée|Double|
+|`sleep_rem`|Durée (en h) de sommeil paradoxal|Double|
+|`awake`|Durée (en h) où l'animal est éveillé|Double|
+|`brain_wt`|Masse (en kg) moyenne du cerveau de l'animal|Double|
+|`body_wt`|Masse (en kg) totale moyenne de l'animal|Double|
+|`brain_body_ratio`|Ratio masse cerveau, masse totale $\frac{\mathtt{brain\_wt}}{\mathtt{body\_wt}}$|Double|
+|`gest_day`|Période de gestation moyenne de l'animal|Int|
       
