@@ -35,56 +35,132 @@ On considère le fichier `iris.csv` sur Celene répertoriant 150 individus fleur
 1. Statistiques descriptives
 > (a) Proposer une analyse préliminaire par statistiques descriptives du jeu de données `iris`. Votre analyse^[Vous pourrez vous aider la fonction `chart.Correlation` de la librairie `PerformanceAnalytics`. ] devra contenir notamment:
 
-> > - Distribution de chaque variable puis analyses synthétiques agrégées par espèce.
+>> - Distribution de chaque variable puis analyses synthétiques agrégées par espèce.
 
-> > - Corrélation entre les variables.
+Dans un premier temps, nous voulion étudier notre source de données en prenant des statistiques générale afin d'avoir une idée globale sur notre dataset.
 
-Premièrement nous voulons étudier combien de ligne et colonnes on a dans la source de données iris: (150 ligne et 5 colonnes)
+Pour cela nous avons commencé par charger notre dataset et par la suite nous nous sommes servis des fonctions telles dim et summary qui nous ont données des informations telles (La moyenne, la médiane, le min et le max, nombre de ligne et colonnes .. )
 
 ```{r}
-
+# Chargement de notre source de données
 iris <- read.csv("C:/Users/incognito/Downloads/iris.csv", sep=";")
-dim(iris)
-```
-afin d'étudier les statistics de notre source de données(min max moyenne et écart type: 
-```{r}
+
+# Savoir le nombre de lignes et colonnes qu'on a dans notre dataset
+dim(iris) # Notre dataset a 150 ligne et 5 colonnes
+
+# Prendre des statistics générale sur toutes nos variable (Min, Max, Moyenne, Ecart-Type...)
 summary(iris)
+
 ```
+
+-- Distribution des variables
+  Nous avons utlisé des histogrammes afin de visualiser la ditribution de chaqu'une de nos variables.
+  
 ```{r}
-# To make a visualisation in R, we can use the core plotting functions of R.
- # A histogram shows the underlying frequency distribution. We use the function 'hist()'
+# Distribution de la variable Sepal.length
+hist(iris[, 'Sepal.Length'], main= 'Histogram of sepal Length for all flowers', xlab='Width (cm)')
+
+# Distribution de la variable Sepal.Width
 hist(iris[, 'Sepal.Width'], main= 'Histogram of sepal width for all flowers', xlab='Width (cm)')
 
+# Distribution de la variable Petal.Length
+hist(iris[, 'Petal.Length'], main= 'Histogram of Petal Length for all flowers', xlab='Width (cm)')
+
+# Distribution de la variable Petal.width
+hist(iris[, 'Petal.Width'], main= 'Histogram of Petal Width for all flowers', xlab='Width (cm)')
+
 
 ```
 
-```{r}
+ -- Visualisation de la distribution de nos variables par espèce
 
-iris <- read.csv("C:/Users/incognito/Downloads/iris.csv", sep=";")
+ - Nous avons répartis par type de variable (Sepal.Width, Sepal.Length...) nos données dans le but de voir comment chaqu'une des variables soit distribuée avec la caractéristique catégorique "Espèce".
+
+```{r}
+library(reshape)
+iris_melt <- reshape::melt(iris, id='Species')
+
+# Garder seulement la variable qui nous intéresse, ici c'est la varibale Sepal.Length
+iris_sepal_length_feature <- iris_melt[iris_melt[,'variable']=='Sepal.Length',]
+# La même chose pour la varibale Sepal.Width
+iris_sepal_width_feature <- iris_melt[iris_melt[,'variable']=='Sepal.Width',]
+# La même chose pour la varibale Petal.Length
+iris_petal_length_feature <- iris_melt[iris_melt[,'variable']=='Petal.Length',]
+# La même chose pour la varibale Petal.Width
+iris_petal_width_feature <- iris_melt[iris_melt[,'variable']=='Petal.Width',]
+```
+
+- Visualisation de variables par type d'espèce
+
+```{r}
+# Sapel.Width par espèce
+g <- ggplot(iris_sepal_width_feature, aes(x= value, fill=Species))
+g <- g + geom_histogram(bins=20, color='white', position='identity', alpha=0.75)
+g <- g+ggtitle('Distribution de Sepal Width par espèce')
+g <- g+facet_wrap(.~Species, nrow = 1)
+g <- g+ theme(strip.text.x = element_text(size = 22))
+g
+
+
+# Sapel.Length par espèce
+g <- ggplot(iris_sepal_length_feature, aes(x= value, fill=Species))
+g <- g + geom_histogram(bins=20, color='white', position='identity', alpha=0.75)
+g <- g+ggtitle('Distribution de Sepal Length par espèce')
+g <- g+facet_wrap(.~Species, nrow = 1)
+g <- g+ theme(strip.text.x = element_text(size = 22))
+g
+
+# Petal.Length par espèce
+g <- ggplot(iris_petal_length_feature, aes(x= value, fill=Species))
+g <- g + geom_histogram(bins=20, color='white', position='identity', alpha=0.75)
+g <- g+ggtitle('Distribution de Petal Length par espèce')
+g <- g+facet_wrap(.~Species, nrow = 1)
+g <- g+ theme(strip.text.x = element_text(size = 22))
+g
+
+# Petal.Width par espèce
+g <- ggplot(iris_petal_width_feature, aes(x= value, fill=Species))
+g <- g + geom_histogram(bins=20, color='white', position='identity', alpha=0.75)
+g <- g+ggtitle('Distribution de Petal Width par espèce')
+g <- g+facet_wrap(.~Species, nrow = 1)
+g <- g+ theme(strip.text.x = element_text(size = 22))
+g
+
+```
+D'après ces visuels, on peut constater que:
+  - Iris Setosa :
+    * Elle a moins de distribution et de densité en cas de longueur et de largeur des pétales
+    * Elle a la densité la plus élevée à 5,0 cm (caractéristique de longueur des sépales) qui est également la valeur médiane (5,0) selon le tableau
+  - Iris Versicolor :
+    * Distribué de manière moyenne et présente des caractéristiques moyennes en cas de longueur et de largeur des pétales
+  - Iris Virginica :
+   * Fortement distribuée avec un grand nombre de valeurs et de caractéristiques en cas de longueur et de largeur des sépales
+
+
+```{r}
 library(RColorBrewer)
-boxplot(iris[0:4],
-names(iris)[0:4],
-main = "Repartition des differentes statistiques des Sepal",
-col = brewer.pal(n = 4, name = "Set1"))
+boxplot(iris[0:4], 
+        names(iris)[0:4], 
+        main = "Repartition des differentes statistiques des variables",
+        col = brewer.pal(n = 4, name = "Set1"))
 
 variables<-iris[0:4]
 
 ```
 -> La boxplot indique principalement les informations des quantiles Q1 et Q3 ainsi que la médiane pour toutes les variables choisies
 
-> (b) Sur la base de ces analyses, quelles variables vous semblent pertinentes pour l'ACP ? 
+>> - Corrélation entre les variables.
 
 ```{r, echo = FALSE, results='hide', message=FALSE}
 library(PerformanceAnalytics)
 chart.Correlation(variables,TRUE)
 ```
 
--> Ce graphique représente la corrélation entre les variables. Comme on peut voir les variables Sepal.length et Sepal.width sont les variables les moins corréles entre eux.
+-> Ce graphique représente la corrélation entre les différentes variables. Comme on peut voir les variables Sepal.length et Sepal.width sont les variables les moins corréles entre eux et les variables Petal.Length et Petal.width sont les plus corrélés.
 
 > (b) Sur la base de ces analyses, quelles variables vous semblent pertinentes pour l'ACP ? 
 
-Les variables qui semblent les plus pertinentes pour l'acp sont Sepal.length et Sepal.width
-
+Les variables qui semblent les plus pertinentes pour l'ACP sont Sepal.length et Sepal.width
 
 2.  Calculer les valeurs propres de la matrice des données `iris`. Combien d'axes proposez vous de retenir pour l'ACP ? Détaillez votre réponse. 
 
@@ -96,8 +172,7 @@ library("factoextra")
 eig.val <- get_eigenvalue(iris.pca)
 round(eig.val,2)
 ```
-afin d'observer le graphique des valeurs propres on a executé la commande suivante: 
-
+Afin d'observer le graphique des valeurs propres on a executé la commande suivante: 
 ```{r}
 fviz_eig(iris.pca, addlabels = TRUE)
 
@@ -110,23 +185,23 @@ En terme de variance cumulée , les deux premières dimensions expliquent 95.9% 
 3. Analyse des variables
 > (a) Dresser le cercle des corrélations de l'ACP. Commentez la qualité de représentation et la contribution de chaque variable quant aux axes retenus. 
 
+```{r}
+fviz_pca_var(iris.pca, col.var = "cos2", 
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), repel = TRUE )
+
+```
 Le cercle des corrélations est un cercle, de rayon 1 où l’axe des abscisses représente le premier axe factoriel selon
 ~v1 et l’axe des ordonnées le second axe.
 
 À l’intérieur du cercle, des flèches partent du centre. Elles sont plus ou moins grandes, et peuvent aller jusqu’à
 toucher le cercle, sans jamais le dépasser.
 
-
-```{r}
-fviz_pca_var(iris.pca, col.var = "cos2", 
-             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"), repel = TRUE )
-
-```
-
 > (b) Interpréter la signification des axes retenus. Vous pourrez vous aider de la contribution des variables aux axes factoriels. 
 
 
 On peut voir que toutes les variables sont très corrélées à l'axe factoriel engendré par $\vec{v_1}$. Toutes les flèches dépassent une valeur projetée de 0.75 sur `Dim1`.
+
+Sepal.Length, Petal.Width et Petal.Length sont très corrélées avec le premier axe factoriel. Cela signifie que la longeur sépal/pétale et largeur de Petal sont très liées aux valeurs sur l'axe 1. Autrement dit les individus qui sont à gauche avec une faible valeur avec l'axe 1 ont longeur de sepal/Petal faible  et largeur sepal faible. Pour Sepal.Width est liée avec le deuxieme axe # à revoir
 
 Afin de voir plus préciseamment les coordonnées précises des composantes princiipales :
 
