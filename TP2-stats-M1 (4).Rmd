@@ -1,7 +1,7 @@
 ---
 title: "Compte-rendu Statistiques -- TP2"
+author: "Amine Elachar et abdallah elmaazouzi"
 subtitle: Analyse en composantes principales et apprentissage
-author: Amine Elachar et abdallah elmaazouzi
 output:
   word_document: default
   pdf_document:
@@ -37,7 +37,7 @@ On considère le fichier `iris.csv` sur Celene répertoriant 150 individus fleur
 
 >> - Distribution de chaque variable puis analyses synthétiques agrégées par espèce.
 
-Dans un premier temps, nous voulion étudier notre source de données en prenant des statistiques générale afin d'avoir une idée globale sur notre dataset.
+Dans un premier temps, nous voulions étudier notre source de données en prenant des statistiques générale afin d'avoir une idée globale sur notre dataset.
 
 Pour cela nous avons commencé par charger notre dataset et par la suite nous nous sommes servis des fonctions telles dim et summary qui nous ont données des informations telles (La moyenne, la médiane, le min et le max, nombre de ligne et colonnes .. )
 
@@ -323,7 +323,7 @@ fviz_pca_ind(iris_non_reduite.pca, axes = c(1,2), addEllipses = TRUE ,geom.ind =
 > Que remarquez vous ? Quelle méthode semble finalement donner les meilleurs résultats ici ? Expliquer ces résultats. 
 
 
-à terminer
+La méthode qui semble donner les meilleurs résultats est les l'acp non réduite comme on avait vu avant que la dimension 1 explique 92.5% Acp non réduite contrairement que pour l'ACP elle explique que 73%.
 
 ## Sommeil des mammifères
 
@@ -342,4 +342,77 @@ On considère le fichier `sleep.csv` sur Celene répertoriant les données de 70
 |`body_wt`|Masse (en kg) totale moyenne de l'animal|Double|
 |`brain_body_ratio`|Ratio masse cerveau, masse totale $\frac{\mathtt{brain\_wt}}{\mathtt{body\_wt}}$|Double|
 |`gest_day`|Période de gestation moyenne de l'animal|Int|
-      
+
+1. Statistiques descriptives
+
+> (a) Proposer une analyse préliminaire par statistiques descriptives du jeu de données `sleep`. Votre analyse devra contenir notamment:
+
+> > - Distribution de chaque variable puis analyses synthétiques agrégées selon différentes variables qualitatives.
+
+> > - Corrélation entre les variables. 
+
+
+
+Dans un premier temps, nous voulions étudier notre source de données en prenant des statistiques générale afin d'avoir une idée globale sur notre dataset.
+
+Pour cela nous avons commencé par charger notre dataset et par la suite nous nous sommes servis des fonctions telles dim et summary qui nous ont données des informations telles (La moyenne, la médiane, le min et le max, nombre de ligne et colonnes .. )
+
+```{r}
+# Chargement de notre source de données
+sleep <- read.csv("C:/Users/incognito/Downloads/sleep.csv", sep=";")
+
+# Savoir le nombre de lignes et colonnes qu'on a dans notre dataset
+dim(sleep) # Notre dataset a 150 ligne et 5 colonnes
+
+# Prendre des statistics générale sur toutes nos variable (Min, Max, Moyenne, Ecart-Type...)
+summary(sleep)
+
+```
+
+
+```{r}
+        #Distribution des variables
+ sleep <- read.delim("C:/Users/incognito/Downloads/sleep.csv", sep = ";", header = TRUE, dec = ".")
+sleep %>% select(-name, -genus, -vore, -order) %>%
+                gather(key = "variable", value = "valeur") %>%
+                ggplot(aes(x = valeur)) +
+                geom_histogram(bins = 30) +
+                facet_wrap(~variable, scales = "free")
+
+```
+>> - Corrélation entre les variables.
+
+```{r, echo = FALSE, results='hide', message=FALSE}
+library(PerformanceAnalytics)
+variables_sleep <-sleep[,5:11]
+chart.Correlation(variables_sleep,TRUE)
+```      
+
+
+```{r}
+ #Corrélation entre les variables avec plotly (plus interactif)
+        cor_mat <- cor(sleep[, -c(1, 2, 3, 4)])
+        plot_ly(z = cor_mat, x = colnames(cor_mat), y = colnames(cor_mat), type = "heatmap", colors = "Blues")
+```
+
+
+> (b) Sur la base de ces analyses, quelles variables vous semblent pertinentes pour l'ACP ? Quelles variables explicatives proposez-vous ? 
+
+2. On propose de compléter les données manquantes de la colonne `sleep_rem` en utilisant une technique de regression  par _la méthode des moindres carrés_. Quelle valeur est estimée pour l'individu _Lamantin_ ? Compléter les valeurs manquantes. 
+
+3. Calculer les valeurs propres de la matrice des données `sleep`. Combien d'axes proposez vous de retenir pour l'ACP ? Détaillez votre réponse. 
+
+4. Analyse des variables
+
+> (a) Commentez la qualité de représentation et la contribution de chaque variable quant aux axes retenus. 
+
+> (b) Interpréter la signification des axes retenus. Vous pourrez vous aider de la contribution des variables aux axes factoriels. 
+
+5. Analyse des individus
+
+> (a) Présenter la projection des indivus dans l'espace factoriel retenu. Vous colorerez dans un premier temps les points en fonction de la variable explicative retenue. 
+
+> >  Pour une projection 3D, on utilisera la commande `plot_ly(df, x = ~Dim.1, y = ~Dim.2, z = ~Dim.3)` de la librairie `plotly` où `df` est votre dataframe des coordonnées des individus et `Dim.k`, la colonne des coordonnées sur l'axe $k$. 
+
+> (b) Colorer les individus en fonction de leur qualité de réprésentation aux axes factoriels puis en fonction de la contribution. Commentez ces résultats. 
+ 
